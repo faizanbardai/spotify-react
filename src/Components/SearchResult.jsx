@@ -5,11 +5,11 @@ import SingleSong from "./SingleSong";
 
 class SearchResult extends Component {
     state = {
-        searchQuery: this.props.match.params.searchQuery,        
+        searchQuery: this.props.match.params.searchQuery,
         loading: true,
         previewSongURL: ""
     }
-    render() {        
+    render() {
         let { searchQuery, searchArray, loading, previewSongURL } = this.state;
         if (loading) {
             return (
@@ -21,19 +21,20 @@ class SearchResult extends Component {
             return (
                 <>
                     <h3 className="display-4">Search: {searchQuery}</h3>
-                    {searchArray.data.length > 0 && 
+                    {searchArray.data.length > 0 &&
                         <div className="row">
                             {searchArray.data.map((song, index) =>
-                                <SingleSong song={song} key={index} previewSong={this.previewSong}/>
-                            )}                        
+                                <SingleSong song={song} key={index} previewSong={this.previewSong} />
+                            )}
                         </div>
                     }
-                    <Footer previewSongURL={previewSongURL}/>
+                    <Footer previewSongURL={previewSongURL} />
                 </>
             )
         }
     }
     componentDidMount = async () => {
+        console.log("Component Mounted")
         let searchQuery = this.props.match.params.searchQuery;
         let searchArray = await search(searchQuery);
         this.setState({
@@ -42,26 +43,23 @@ class SearchResult extends Component {
         })
     }
     componentDidUpdate = async (prevProps) => {
-        // if (this.props.location.pathname !== prevProps.location.pathname) {
-        //     let searchQuery = this.props.match.params.searchQuery;
-        //     let searchArray = await search(searchQuery)
-
-        //     searchArray.Error ? this.setState({ error: searchArray.Error }) :
-
-        //         this.setState({
-        //             searchQuery: searchQuery,
-        //             searchArray: searchArray,
-        //             error: false,
-        //             loading: false
-        //         })
-        // }
+        if (this.props.location.pathname !== prevProps.location.pathname) {
+            this.setState({loading: true});
+            let searchQuery = this.props.match.params.searchQuery;
+            let searchArray = await search(searchQuery)
+            this.setState({
+                searchQuery: searchQuery,
+                searchArray: searchArray,
+                loading: false
+            })
+        }
     }
     previewSong = (newURL) => {
         this.setState({
             previewSongURL: newURL
         })
     }
-    
+
 }
 
 export default SearchResult;
